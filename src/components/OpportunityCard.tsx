@@ -64,7 +64,7 @@ const OpportunityCard = ({ opportunity, onTrack, showTrack = true, notes, onNote
   const urgent = isUrgent(deadline);
 
   return (
-    <div className="card-glow rounded-lg bg-card p-5 transition-all duration-300 hover:translate-y-[-2px]">
+    <div className="group relative card-glow rounded-lg bg-card p-5 transition-all duration-300 hover:translate-y-[-2px] overflow-hidden">
       <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="font-semibold text-foreground text-lg leading-tight">{name}</h3>
         <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${typeBadgeClass[type]}`}>
