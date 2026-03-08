@@ -10,9 +10,13 @@ SheSignal is an AI-powered web app that helps women in STEM discover personalize
 
 <!-- Add screenshots to /public/screenshots/ and update paths below -->
 
-| Landing | Signals | Tracker |
-|---|---|---|
-| ![Landing](public/screenshots/landing.png) | ![Signals](public/screenshots/signals1.png) | ![Tracker](public/screenshots/tracker.png) |
+![Landing](public/screenshots/landing.png)
+
+![Signals](public/screenshots/signals1.png)
+
+![Signals](public/screenshots/signals.png)
+
+![Tracker](public/screenshots/tracker.png)
 
 ---
 
