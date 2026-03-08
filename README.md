@@ -1,73 +1,132 @@
-# Welcome to your Lovable project
+# SheSignal
 
-## Project info
+> The signal goes up. You show up.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+SheSignal is an AI-powered web app that helps women in STEM discover personalized opportunities — hackathons, scholarships, conferences, and grants — before the deadlines pass.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Screenshots
 
-**Use Lovable**
+<!-- Add screenshots to /public/screenshots/ and update paths below -->
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+| Landing | Signals | Tracker |
+|---|---|---|
+| ![Landing](public/screenshots/landing.png) | ![Signals](public/screenshots/signals1.png) | ![Tracker](public/screenshots/tracker.png) |
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **AI-curated opportunities** — Claude finds hackathons, scholarships, conferences, and grants matched to your profile
+- **Personalized results** — tailored by field, career stage, country, and interests
+- **Deadline tracking** — urgent deadlines highlighted, one-click Google Calendar export
+- **Kanban tracker** — move opportunities through Want to Apply → Applied → Heard Back
+- **Auth** — email/password and Google OAuth via Supabase
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React + TypeScript + Tailwind CSS |
+| UI Components | shadcn/ui (via Lovable) |
+| Auth & Database | Supabase (Postgres + RLS) |
+| AI Engine | Anthropic Claude (Haiku) via Supabase Edge Function |
+| Build | Vite |
+
+---
+
+## Local Setup
+
+### Prerequisites
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+- An [Anthropic](https://console.anthropic.com) API key
+
+### 1. Clone & install
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone <your-repo-url>
+cd she-signal
+npm install
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Environment variables
 
-# Step 3: Install the necessary dependencies.
-npm i
+Create `.env.local` in the root:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### 3. Supabase setup
+
+Run the SQL migrations in **Supabase Dashboard → SQL Editor** (see `DATABASE.md` for full SQL):
+- `profiles` table + `handle_new_user` trigger
+- `saved_opportunities` table
+- RLS policies for both tables
+
+Enable auth providers in **Dashboard → Authentication → Providers**:
+- Email (confirm email optional for dev)
+- Google (optional — requires Google OAuth client)
+
+### 4. Deploy the Edge Function
+
+```sh
+npx supabase login
+npx supabase link --project-ref <your-project-ref>
+npx supabase functions deploy get-opportunities --no-verify-jwt
+npx supabase secrets set ANTHROPIC_API_KEY=your-anthropic-key
+```
+
+### 5. Run locally
+
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open [http://localhost:8080](http://localhost:8080).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+/src
+  /components       UI components (Lovable-generated + custom)
+  /pages            Route-level pages (Landing, Login, Profile, Signal, Tracker)
+  /lib              supabase.ts, calendar.ts
+  /hooks            useAuth.ts, useTracker.ts
+  /types            index.ts — shared TypeScript types
+/supabase
+  /functions
+    get-opportunities/  Edge function — calls Claude API server-side
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## User Flow
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. `/` — Hero landing page
+2. `/login` — Sign up or sign in (email or Google)
+3. `/profile` — Fill in field, career stage, country, interests
+4. `/signals` — Claude returns 6–10 personalized opportunities
+5. Click **Track This** → saved to Supabase
+6. `/tracker` — Kanban board to manage applications
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Environment Variables
 
-## Can I connect a custom domain to my Lovable project?
+| Variable | Where |
+|---|---|
+| `VITE_SUPABASE_URL` | `.env.local` |
+| `VITE_SUPABASE_ANON_KEY` | `.env.local` |
+| `ANTHROPIC_API_KEY` | Supabase Edge Function secret (never in code) |
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Built with ♀ for women in STEM.
