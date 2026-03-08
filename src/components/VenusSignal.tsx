@@ -8,44 +8,45 @@ const VenusSignal = () => {
       <div className="absolute inset-0 -m-10 rounded-full bg-signal-amber/8 blur-2xl" />
 
       <motion.svg
-        width="160"
-        height="220"
-        viewBox="0 0 160 220"
+        width="180"
+        height="260"
+        viewBox="0 0 180 260"
         fill="none"
         className="relative z-10 drop-shadow-[0_0_40px_hsl(43,96%,56%,0.5)]"
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Outer glow circle */}
-        <circle cx="80" cy="70" r="58" stroke="hsl(43, 96%, 56%)" strokeWidth="3" opacity="0.15" />
+        <circle cx="90" cy="80" r="62" stroke="hsl(43, 96%, 56%)" strokeWidth="2.5" opacity="0.15" />
         {/* Main circle */}
         <circle
-          cx="80"
-          cy="70"
-          r="48"
+          cx="90"
+          cy="80"
+          r="50"
           stroke="hsl(43, 96%, 56%)"
-          strokeWidth="4"
+          strokeWidth="4.5"
+          fill="none"
           filter="url(#venusGlow)"
         />
-        {/* Vertical line */}
+        {/* Vertical line extending down from circle */}
         <line
-          x1="80" y1="118" x2="80" y2="190"
+          x1="90" y1="130" x2="90" y2="210"
           stroke="hsl(43, 96%, 56%)"
-          strokeWidth="4"
+          strokeWidth="4.5"
           strokeLinecap="round"
           filter="url(#venusGlow)"
         />
-        {/* Horizontal cross */}
+        {/* Horizontal cross bar */}
         <line
-          x1="55" y1="155" x2="105" y2="155"
+          x1="58" y1="175" x2="122" y2="175"
           stroke="hsl(43, 96%, 56%)"
-          strokeWidth="4"
+          strokeWidth="4.5"
           strokeLinecap="round"
           filter="url(#venusGlow)"
         />
         <defs>
           <filter id="venusGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feGaussianBlur stdDeviation="5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
