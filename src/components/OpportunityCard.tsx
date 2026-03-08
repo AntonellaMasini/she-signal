@@ -1,5 +1,7 @@
 import { Calendar, ExternalLink, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BatwomanSilhouette from "@/components/BatwomanSilhouette";
+import { Button } from "@/components/ui/button";
 
 export interface Opportunity {
   name: string;
