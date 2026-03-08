@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import SignalBeam from "@/components/SignalBeam";
+import VenusSignal from "@/components/VenusSignal";
+import CitySkyline from "@/components/CitySkyline";
 import Navbar from "@/components/Navbar";
 import { ArrowRight, Zap, TrendingUp, Users } from "lucide-react";
 
