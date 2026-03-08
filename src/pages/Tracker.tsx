@@ -1,55 +1,47 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
-import OpportunityCard, { Opportunity } from "@/components/OpportunityCard";
+import OpportunityCard from "@/components/OpportunityCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, CheckCircle, PartyPopper } from "lucide-react";
-
-interface TrackedOpp extends Opportunity {
-  notes: string;
-}
-
-interface TrackerState {
-  want: TrackedOpp[];
-  applied: TrackedOpp[];
-  heard: TrackedOpp[];
-}
+import { Eye, CheckCircle, PartyPopper, Trash2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useTracker } from "@/hooks/useTracker";
+import type { TrackerStatus } from "@/types";
+import { useState } from "react";
 
 const columns = [
-  { key: "want" as const, label: "Want to Apply", icon: Eye, emoji: "👀" },
-  { key: "applied" as const, label: "Applied", icon: CheckCircle, emoji: "✅" },
-  { key: "heard" as const, label: "Heard Back", icon: PartyPopper, emoji: "🎉" },
+  { key: "want_to_apply" as TrackerStatus, label: "Want to Apply", icon: Eye, emoji: "👀" },
+  { key: "applied" as TrackerStatus, label: "Applied", icon: CheckCircle, emoji: "✅" },
+  { key: "heard_back" as TrackerStatus, label: "Heard Back", icon: PartyPopper, emoji: "🎉" },
 ];
 
 const Tracker = () => {
-  const [tracker, setTracker] = useState<TrackerState>({ want: [], applied: [], heard: [] });
-  const [activeTab, setActiveTab] = useState<keyof TrackerState>("want");
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const { tracker, loading, moveOpp, updateNotes, deleteOpp } = useTracker();
+  const [activeTab, setActiveTab] = useState<TrackerStatus>("want_to_apply");
 
   useEffect(() => {
-    const raw = localStorage.getItem("shesignal-tracker");
-    if (raw) setTracker(JSON.parse(raw));
-  }, []);
+    if (!authLoading && !user) navigate("/login");
+  }, [user, authLoading, navigate]);
 
-  const save = (updated: TrackerState) => {
-    setTracker(updated);
-    localStorage.setItem("shesignal-tracker", JSON.stringify(updated));
-  };
+  const total = tracker.want_to_apply.length + tracker.applied.length + tracker.heard_back.length;
 
-  const moveOpp = (opp: TrackedOpp, from: keyof TrackerState, to: keyof TrackerState) => {
-    const updated = { ...tracker };
-    updated[from] = updated[from].filter((o) => o.name !== opp.name);
-    updated[to] = [...updated[to], opp];
-    save(updated);
-  };
-
-  const updateNotes = (column: keyof TrackerState, index: number, notes: string) => {
-    const updated = { ...tracker };
-    updated[column] = [...updated[column]];
-    updated[column][index] = { ...updated[column][index], notes };
-    save(updated);
-  };
-
-  const total = tracker.want.length + tracker.applied.length + tracker.heard.length;
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container max-w-5xl pt-28 pb-16 px-4">
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-lg bg-card p-5 animate-pulse h-32" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,7 +77,7 @@ const Tracker = () => {
                     <span>{col.emoji}</span>
                     {col.label}
                     <span className="ml-1 text-xs bg-muted rounded-full px-2 py-0.5">
-                      {tracker[col.key].length}
+                      {tracker[activeTab === col.key ? col.key : col.key].length}
                     </span>
                   </button>
                 ))}
@@ -100,7 +92,7 @@ const Tracker = () => {
                 ) : (
                   tracker[activeTab].map((opp, i) => (
                     <motion.div
-                      key={opp.name}
+                      key={opp.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
@@ -110,14 +102,12 @@ const Tracker = () => {
                           opportunity={opp}
                           showTrack={false}
                           notes={opp.notes}
-                          onNotesChange={(notes) => updateNotes(activeTab, i, notes)}
+                          onNotesChange={(notes) => updateNotes(opp.id, notes)}
                         />
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4 flex items-center gap-2">
                           <Select
                             value={activeTab}
-                            onValueChange={(val) =>
-                              moveOpp(opp, activeTab, val as keyof TrackerState)
-                            }
+                            onValueChange={(val) => moveOpp(opp.id, val as TrackerStatus)}
                           >
                             <SelectTrigger className="w-36 bg-muted border-border text-xs h-8">
                               <SelectValue />
@@ -130,6 +120,13 @@ const Tracker = () => {
                               ))}
                             </SelectContent>
                           </Select>
+                          <button
+                            onClick={() => deleteOpp(opp.id)}
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     </motion.div>

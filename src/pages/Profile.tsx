@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 import { Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 const fields = [
   "Engineering",
@@ -39,11 +42,36 @@ const interestOptions = [
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [field, setField] = useState("");
   const [stage, setStage] = useState("");
   const [country, setCountry] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/login");
+      return;
+    }
+    if (user) {
+      supabase
+        .from("profiles")
+        .select("name, field, stage, country, interests")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            if (data.name) setName(data.name);
+            if (data.field) setField(data.field);
+            if (data.stage) setStage(data.stage);
+            if (data.country) setCountry(data.country);
+            if (data.interests) setInterests(data.interests);
+          }
+        });
+    }
+  }, [user, authLoading, navigate]);
 
   const toggleInterest = (interest: string) => {
     setInterests((prev) =>
@@ -51,12 +79,29 @@ const Profile = () => {
     );
   };
 
-  const handleSubmit = () => {
-    if (!name.trim() || !field || !stage) return;
-    const profile = { name: name.trim(), field, stage, country: country.trim(), interests };
-    sessionStorage.setItem("shesignal-profile", JSON.stringify(profile));
-    navigate("/signal");
+  const handleSubmit = async () => {
+    if (!name.trim() || !field || !stage || !user) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("profiles").upsert({
+        id: user.id,
+        name: name.trim(),
+        field,
+        stage,
+        country: country.trim(),
+        interests,
+        updated_at: new Date().toISOString(),
+      });
+      if (error) throw error;
+      navigate("/signals");
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to save profile");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (authLoading) return null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,7 +184,7 @@ const Profile = () => {
             <Button
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-display text-lg tracking-wider py-6 signal-glow mt-4"
               onClick={handleSubmit}
-              disabled={!name.trim() || !field || !stage}
+              disabled={saving || !name.trim() || !field || !stage}
             >
               <Sparkles className="w-5 h-5 mr-2" /> Find My Opportunities
             </Button>

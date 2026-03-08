@@ -5,6 +5,7 @@ import SignalBeam from "@/components/SignalBeam";
 import VenusSignal from "@/components/VenusSignal";
 import CitySkyline from "@/components/CitySkyline";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowRight, Zap, TrendingUp, Users } from "lucide-react";
 
 const stats = [
@@ -27,6 +28,7 @@ const stats = [
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,7 +100,7 @@ const Landing = () => {
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 font-display text-xl tracking-wider px-10 py-6 signal-glow"
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(user ? "/profile" : "/login")}
             >
               Find My Signal <ArrowRight className="ml-2 w-5 h-5" />
             </Button>

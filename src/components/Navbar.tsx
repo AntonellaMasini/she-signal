@@ -1,13 +1,22 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const links = [
     { to: "/", label: "Home" },
     { to: "/profile", label: "Find Opportunities" },
     { to: "/tracker", label: "My Tracker" },
   ];
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -29,6 +38,26 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          {!user ? (
+            <Link
+              to="/login"
+              className="ml-2 px-4 py-2 rounded-md text-sm font-medium border border-primary text-primary hover:bg-primary/10 transition-colors"
+            >
+              Sign In
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2 ml-2">
+              <span className="text-xs text-muted-foreground max-w-[120px] truncate hidden sm:block">
+                {user.email}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground border border-border hover:border-primary hover:text-primary transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
