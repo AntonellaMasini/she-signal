@@ -37,26 +37,40 @@ const Landing = () => {
         {/* Sky background with gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background to-signal-navy/50" />
 
-        {/* Stars */}
-        {[...Array(30)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-foreground/30"
-            style={{
-              width: 1 + Math.random() * 2,
-              height: 1 + Math.random() * 2,
-              top: `${Math.random() * 60}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{ opacity: [0.2, 0.8, 0.2] }}
-            transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 2 }}
-          />
-        ))}
+        {/* Starfield */}
+        {[...Array(60)].map((_, i) => {
+          const size = 1 + Math.random() * 2.5;
+          const top = Math.random() * 65;
+          const left = Math.random() * 100;
+          const duration = 2 + Math.random() * 4;
+          const delay = Math.random() * 3;
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full bg-foreground animate-twinkle"
+              style={{
+                width: size,
+                height: size,
+                top: `${top}%`,
+                left: `${left}%`,
+                animationDuration: `${duration}s`,
+                animationDelay: `${delay}s`,
+                opacity: 0.15 + Math.random() * 0.5,
+              }}
+            />
+          );
+        })}
+
+        {/* Venus symbol projected in sky */}
+        <VenusSignal />
 
         {/* Signal beam behind content */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-[70vh]">
           <SignalBeam className="w-full h-full" />
         </div>
+
+        {/* City skyline */}
+        <CitySkyline />
 
         {/* Content */}
         <div className="relative z-10 text-center px-4 max-w-3xl">
