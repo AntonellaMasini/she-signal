@@ -125,6 +125,7 @@ const OpportunityCard = ({ opportunity, onTrack, showTrack = true, notes, onNote
           onChange={(e) => onNotesChange(e.target.value)}
         />
       )}
+      <BatwomanSilhouette />
     </div>
   );
 };
