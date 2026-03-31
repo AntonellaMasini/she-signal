@@ -5,7 +5,7 @@ SheSignal is a web app that helps women in STEM discover opportunities (hackatho
 
 ## Tech Stack
 - **Frontend**: React + Tailwind (built in Lovable — do not restructure or rename existing components unless explicitly asked)
-- **AI Engine**: Anthropic Claude API (`claude-sonnet-4-20250514`) with web search tool enabled
+- **AI Engine**: Anthropic Claude API (`claude-sonnet-4-20250514`) with web search tool (`web_search_20250305`) enabled
 - **Auth**: Supabase Auth (email/password + Google OAuth)
 - **Database**: Supabase (Postgres) — stores user profiles and saved opportunities
 - **Calendar**: Google Calendar URL API (no OAuth — just link generation)

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,34 @@ const Landing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const stars = useMemo(
+    () =>
+      [...Array(60)].map((_, i) => {
+        const size = 1 + Math.random() * 2.5;
+        const top = Math.random() * 65;
+        const left = Math.random() * 100;
+        const duration = 2 + Math.random() * 4;
+        const delay = Math.random() * 3;
+        const opacity = 0.15 + Math.random() * 0.5;
+        return (
+          <div
+            key={i}
+            className="absolute rounded-full bg-foreground animate-twinkle"
+            style={{
+              width: size,
+              height: size,
+              top: `${top}%`,
+              left: `${left}%`,
+              animationDuration: `${duration}s`,
+              animationDelay: `${delay}s`,
+              opacity,
+            }}
+          />
+        );
+      }),
+    []
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -40,28 +69,7 @@ const Landing = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background to-signal-navy/50" />
 
         {/* Starfield */}
-        {[...Array(60)].map((_, i) => {
-          const size = 1 + Math.random() * 2.5;
-          const top = Math.random() * 65;
-          const left = Math.random() * 100;
-          const duration = 2 + Math.random() * 4;
-          const delay = Math.random() * 3;
-          return (
-            <div
-              key={i}
-              className="absolute rounded-full bg-foreground animate-twinkle"
-              style={{
-                width: size,
-                height: size,
-                top: `${top}%`,
-                left: `${left}%`,
-                animationDuration: `${duration}s`,
-                animationDelay: `${delay}s`,
-                opacity: 0.15 + Math.random() * 0.5,
-              }}
-            />
-          );
-        })}
+        {stars}
 
         {/* Venus symbol projected in sky */}
         <VenusSignal />

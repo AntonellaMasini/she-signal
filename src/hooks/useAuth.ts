@@ -1,8 +1,16 @@
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
+import React from 'react'
 
-export function useAuth() {
+type AuthContextType = {
+  user: User | null
+  loading: boolean
+}
+
+const AuthContext = createContext<AuthContextType>({ user: null, loading: true })
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -19,5 +27,9 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
-  return { user, loading }
+  return React.createElement(AuthContext.Provider, { value: { user, loading } }, children)
+}
+
+export function useAuth() {
+  return useContext(AuthContext)
 }

@@ -64,6 +64,11 @@ RULES:
 4. Write a personalized whyMatch referencing something specific about this user.
 5. Only include REAL opportunities with real URLs.
 6. Return ONLY valid JSON array. No preamble, no markdown, no explanation.
+7. Never return an opportunity if you cannot verify its URL resolves to a real page.
+8. If a deadline has passed, exclude it entirely — do not include it as "closed".
+9. Always return exactly 8 opportunities, never fewer. If web search yields little, fill remaining slots from the seed list with "deadline: TBD".
+10. Never invent organizations, funding amounts, or URLs. If unsure, omit that field.
+11. The JSON array must start with [ on the first character of your response. No text before or after the array.
 
 JSON format:
 [{
@@ -100,8 +105,10 @@ serve(async (req) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        temperature: 0,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: SYSTEM_PROMPT,
         messages: [{
           role: 'user',
@@ -124,9 +131,12 @@ Return 6-10 results as a JSON array only.`
       throw new Error(`Anthropic API error: ${JSON.stringify(data.error ?? data)}`)
     }
 
-    const textBlock = data.content?.find((b: any) => b.type === 'text')
-    const clean = (textBlock?.text ?? '[]').replace(/```json|```/g, '').trim()
-    const opportunities = JSON.parse(clean)
+    const textBlocks = data.content
+      ?.filter((b: any) => b.type === 'text')
+      .map((b: any) => b.text)
+      .join('')
+    const jsonMatch = (textBlocks ?? '').match(/\[\s*\{[\s\S]*\}\s*\]/)
+    const opportunities = jsonMatch ? JSON.parse(jsonMatch[0]) : []
 
     return new Response(
       JSON.stringify({ opportunities }),

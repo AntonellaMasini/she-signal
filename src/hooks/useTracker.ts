@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { SavedOpportunity, TrackerStatus } from '@/types'
 
@@ -60,12 +60,10 @@ export function useTracker() {
     await fetchTracker()
   }
 
-  const updateNotes = async (id: string, notes: string) => {
-    await supabase
-      .from('saved_opportunities')
-      .update({ notes, updated_at: new Date().toISOString() })
-      .eq('id', id)
-    // Optimistic update
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
+
+  const updateNotes = (id: string, notes: string) => {
+    // Optimistic update immediately
     setTracker((prev) => {
       const next = { ...prev }
       for (const col of Object.keys(next) as (keyof TrackerBoard)[]) {
@@ -73,6 +71,18 @@ export function useTracker() {
       }
       return next
     })
+
+    // Debounce the DB write
+    if (debounceTimers.current[id]) {
+      clearTimeout(debounceTimers.current[id])
+    }
+    debounceTimers.current[id] = setTimeout(async () => {
+      await supabase
+        .from('saved_opportunities')
+        .update({ notes, updated_at: new Date().toISOString() })
+        .eq('id', id)
+      delete debounceTimers.current[id]
+    }, 500)
   }
 
   const deleteOpp = async (id: string) => {
