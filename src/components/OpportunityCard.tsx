@@ -50,6 +50,9 @@ const OpportunityCard = ({ opportunity, onTrack, showTrack = true, notes, onNote
         <p className="text-xs text-muted-foreground mb-2">{organization}</p>
       )}
 
+      {opportunity.description && (
+        <p className="text-sm text-foreground/70 mb-2">{opportunity.description}</p>
+      )}
       <p className="text-sm italic text-muted-foreground mb-3">{whyMatch}</p>
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">

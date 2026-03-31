@@ -35,7 +35,7 @@ const { data, error } = await supabase.auth.signInWithPassword({ email, password
 ```typescript
 const { data, error } = await supabase.auth.signInWithOAuth({
   provider: 'google',
-  options: { redirectTo: `${window.location.origin}/dashboard` }
+  options: { redirectTo: `${window.location.origin}/auth/callback` }
 })
 ```
 
@@ -112,7 +112,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 1. User lands on `/` — sees the SheSignal hero (public)
 2. Clicks "Find My Signal" → redirected to `/login` if not authenticated
 3. After login/signup → redirected to `/profile` to fill in their details
-4. After profile submit → `/results` with curated opportunities
+4. After profile submit → `/signals` with curated opportunities
 5. User saves opportunities → stored in `saved_opportunities` table
 6. `/tracker` shows their Kanban board (Want to Apply / Applied / Heard Back)
 
@@ -135,6 +135,6 @@ if (!profile?.field) navigate('/profile')
 - [ ] Enable Email provider in Auth > Providers
 - [ ] Enable Google provider — add Google OAuth client ID + secret
 - [ ] Set Site URL to your deployed domain
-- [ ] Add `http://localhost:5173` to Redirect URLs for local dev
+- [ ] Add `http://localhost:8080` to Redirect URLs for local dev
 - [ ] Run database migrations from `DATABASE.md`
 - [ ] Add `ANTHROPIC_API_KEY` as Edge Function secret in Supabase Dashboard > Edge Functions > Secrets

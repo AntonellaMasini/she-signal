@@ -77,7 +77,7 @@ const Tracker = () => {
                     <span>{col.emoji}</span>
                     {col.label}
                     <span className="ml-1 text-xs bg-muted rounded-full px-2 py-0.5">
-                      {tracker[activeTab === col.key ? col.key : col.key].length}
+                      {tracker[col.key].length}
                     </span>
                   </button>
                 ))}

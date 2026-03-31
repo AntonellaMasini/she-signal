@@ -100,8 +100,10 @@ serve(async (req) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1500,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        temperature: 0,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: SYSTEM_PROMPT,
         messages: [{
           role: 'user',
@@ -124,9 +126,12 @@ Return 6-10 results as a JSON array only.`
       throw new Error(`Anthropic API error: ${JSON.stringify(data.error ?? data)}`)
     }
 
-    const textBlock = data.content?.find((b: any) => b.type === 'text')
-    const clean = (textBlock?.text ?? '[]').replace(/```json|```/g, '').trim()
-    const opportunities = JSON.parse(clean)
+    const textBlocks = data.content
+      ?.filter((b: any) => b.type === 'text')
+      .map((b: any) => b.text)
+      .join('')
+    const jsonMatch = (textBlocks ?? '').match(/\[[\s\S]*\]/)
+    const opportunities = jsonMatch ? JSON.parse(jsonMatch[0]) : []
 
     return new Response(
       JSON.stringify({ opportunities }),
