@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import Signal from "./pages/Signal";
 import Tracker from "./pages/Tracker";
@@ -27,7 +28,7 @@ const App = () => (
           <Route path="/profile" element={
             <ProtectedRoute><Profile /></ProtectedRoute>
           } />
-          <Route path="/auth/callback" element={<Landing />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/signals" element={
             <ProtectedRoute><Signal /></ProtectedRoute>
           } />

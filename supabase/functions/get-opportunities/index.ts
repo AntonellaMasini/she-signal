@@ -135,7 +135,7 @@ Return 6-10 results as a JSON array only.`
       ?.filter((b: any) => b.type === 'text')
       .map((b: any) => b.text)
       .join('')
-    const jsonMatch = (textBlocks ?? '').match(/\[[\s\S]*\]/)
+    const jsonMatch = (textBlocks ?? '').match(/\[\s*\{[\s\S]*\}\s*\]/)
     const opportunities = jsonMatch ? JSON.parse(jsonMatch[0]) : []
 
     return new Response(
